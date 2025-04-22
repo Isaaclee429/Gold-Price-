@@ -1,5 +1,3 @@
-# Gold-Price-
-Prediction
 # 黃金價格預測互動小工具（使用參數模擬）
 
 import matplotlib.pyplot as plt
