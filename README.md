@@ -1,47 +1,28 @@
-# 黃金價格預測互動小工具（使用參數模擬）
-
+import streamlit as st
 import matplotlib.pyplot as plt
-import numpy as np
 
-def simulate_gold_price(
-    base_price=3480,
-    geopolitical_risk=0.0,     # 地緣政治風險因子（0~1）
-    usd_strength=0.0,          # 美元強度因子（-1~1，負值表示美元走弱）
-    inflation_expectation=0.0  # 通膨預期（0~1）
-):
-    """
-    模擬黃金價格變化。
-    每個因子將對最終價格產生線性影響。
-    """
-    # 因子權重（可以自行調整）
-    weights = {
-        'geopolitical_risk': 200,
-        'usd_strength': -150,
-        'inflation_expectation': 180
-    }
+# 標題
+st.title("黃金價格預測小工具")
+st.markdown("根據地緣風險、美元強度與通膨預期模擬金價")
 
-    # 預測價格計算
-    delta = (
-        weights['geopolitical_risk'] * geopolitical_risk +
-        weights['usd_strength'] * usd_strength +
-        weights['inflation_expectation'] * inflation_expectation
-    )
-    predicted_price = base_price + delta
+# 參數輸入
+base_price = 3480
+geo = st.slider("地緣政治風險", 0.0, 1.0, 0.6, step=0.05)
+usd = st.slider("美元強度（負值為走弱）", -1.0, 1.0, -0.4, step=0.05)
+inflation = st.slider("通膨預期", 0.0, 1.0, 0.5, step=0.05)
 
-    # 畫圖
-    plt.figure(figsize=(6, 4))
-    bars = plt.bar(['預測金價'], [predicted_price], color='gold')
-    plt.axhline(base_price, color='red', linestyle='--', label=f'目前金價 ${base_price}')
-    plt.title('黃金價格模擬工具')
-    plt.ylabel('美元/盎司')
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
+# 計算
+delta = geo * 200 + usd * -150 + inflation * 180
+predicted_price = base_price + delta
 
-# 範例：預設參數模擬
-simulate_gold_price(
-    base_price=3480,
-    geopolitical_risk=0.6,
-    usd_strength=-0.4,
-    inflation_expectation=0.5
-) # 你可根據需要調整這三個參數
+# 顯示結果
+st.metric("預測金價（美元/盎司）", f"${predicted_price:.2f}")
+
+# 畫圖
+fig, ax = plt.subplots()
+ax.bar(['預測金價'], [predicted_price], color='gold')
+ax.axhline(base_price, color='red', linestyle='--', label=f'目前金價 ${base_price}')
+ax.set_ylabel("美元/盎司")
+ax.set_title("模擬黃金價格")
+ax.legend()
+st.pyplot(fig)
